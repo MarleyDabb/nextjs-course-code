@@ -1,34 +1,31 @@
-import { Fragment } from 'react';
-import Head from 'next/head';
+import path from 'path';
+import fs from 'fs/promises';
 
-import FeaturedPosts from '../components/home-page/featured-posts';
-import Hero from '../components/home-page/hero';
-import { getFeaturedPosts } from '../lib/posts-util';
+export async function getStaticProps() {
+    const filePath = path.join(process.cwd(), 'data');
+    const jsonData = await fs.readFile(filePath);
+    const data = JSON.parse(jsonData)
 
-function HomePage(props) {
-  return (
-    <Fragment>
-      <Head>
-        <title>Max' Blog</title>
-        <meta
-          name='description'
-          content='I post about programming and web development.'
-        />
-      </Head>
-      <Hero />
-      <FeaturedPosts posts={props.posts} />
-    </Fragment>
-  );
+    console.log(data);
+
+    return {
+        props: {
+            products: data.products
+        }
+    }
 }
 
-export function getStaticProps() {
-  const featuredPosts = getFeaturedPosts();
+function HomePage({products}) {
+  return (
+    <ul>
+        {products.map(product => (
+            <li key={product.id}>{product.title}</li>
 
-  return {
-    props: {
-      posts: featuredPosts,
-    },
-  };
+        ))}
+
+
+    </ul>
+  );
 }
 
 export default HomePage;
